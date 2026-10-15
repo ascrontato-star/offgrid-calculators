@@ -3,60 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcolatori Off-Grid e Camper | Tool Gratuiti</title>
-    <meta name="description" content="Raccolta di strumenti e calcolatori gratuiti per progettare l'impianto elettrico off-grid del tuo camper, van o baita.">
+    <title>Calcolo Collegamento Serie e Parallelo Pannelli e Batterie</title>
+    <meta name="description" content="Calcola Volt e Ampere totali per il collegamento in serie o parallelo di pannelli solari e batterie. Strumento gratuito per impianti camper e off-grid.">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Calcolatore Serie e Parallelo Off-Grid",
+      "operatingSystem": "Web",
+      "applicationCategory": "UtilitiesApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Strumento per calcolare la tensione (Volt) e la corrente (Ampere) totali derivanti dal collegamento in serie o in parallelo di più pannelli solari o batterie."
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Qual è la differenza tra il collegamento in serie e in parallelo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Nel collegamento in serie si collegano i poli opposti (positivo con negativo): le tensioni (Volt) si sommano, mentre la corrente (Ampere) rimane quella del singolo modulo. Nel collegamento in parallelo si uniscono i poli uguali (positivo con positivo, negativo con negativo): la tensione rimane invariata, mentre si sommano le correnti e le capacità (Ah)."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Posso collegare tra loro pannelli solari o batterie diverse?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "È fortemente sconsigliato. Collegando in parallelo moduli con Volt diversi, si creano correnti di cortocircuito interne. Collegando in serie moduli con Ampere diversi, il pannello o la batteria con la corrente minore farà da 'collo di bottiglia', limitando le prestazioni di tutto l'impianto e rischiando surriscaldamenti."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Cos'è il collegamento misto serie-parallelo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Negli impianti fotovoltaici più grandi o nei grossi banchi batteria, si utilizza il collegamento serie-parallelo per aumentare contemporaneamente sia i Volt che gli Ampere. Si creano prima delle 'stringhe' collegando alcuni moduli in serie per raggiungere la tensione desiderata, e poi si collegano queste stringhe tra loro in parallelo per aumentare la capacità totale."
+        }
+      }]
+    }
+    </script>
+
     <style>
         :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
             --primary: #2c3e50;
+            --secondary: #34495e;
             --accent: #e67e22;
-            --bg: #f8f9fa;
-            --card-bg: #ffffff;
-            --text: #333333;
+            --accent-hover: #d35400;
+            --amazon-btn: #f0c14b;
+            --amazon-btn-hover: #ddb347;
+            --amazon-text: #111111;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #e0e0e0;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
-        .container { max-width: 900px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 40px; padding: 40px 20px; background-color: var(--primary); color: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        header h1 { font-size: 2rem; margin-bottom: 10px; }
-        header p { font-size: 1.1rem; opacity: 0.9; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .card { background-color: var(--card-bg); border-radius: 10px; padding: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #e0e0e0; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
-        .card h2 { font-size: 1.4rem; margin-bottom: 15px; color: var(--primary); }
-        .card p { font-size: 0.95rem; margin-bottom: 25px; color: #666; }
-        .btn { display: inline-block; background-color: var(--accent); color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; width: 100%; text-align: center; transition: background-color 0.2s; }
-        .btn:hover { background-color: #d35400; }
-        footer { margin-top: 50px; text-align: center; font-size: 0.85rem; color: #7f8c8d; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .calculator-box {
+            background-color: #f9fbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button.calc-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result-box h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .result-grid {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .result-item {
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            min-width: 150px;
+        }
+
+        .result-item span {
+            display: block;
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .amazon-cta {
+            display: block;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto 0;
+            background-color: var(--amazon-btn);
+            color: var(--amazon-text);
+            text-align: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            border: 1px solid #a88734;
+        }
+
+        .amazon-cta:hover {
+            background-color: var(--amazon-btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .editorial-content {
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .editorial-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .editorial-content p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .faq-section h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.8rem; }
+            .input-row { flex-direction: column; gap: 15px; margin-bottom: 15px; }
+            .result-grid { flex-direction: column; gap: 15px; }
+            .result-value { font-size: 1.8rem; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Tool & Calcolatori Off-Grid</h1>
-            <p>Progetta il tuo impianto elettrico in modo semplice e sicuro</p>
-        </header>
 
-        <div class="grid">
-            <!-- INIZIO TOOL 1: BATTERIE -->
-            <div class="card">
-                <h2>🔋 Calcolatore Batterie LiFePO4</h2>
-                <p>Scopri l'amperaggio esatto (Ah) necessario per la tua batteria servizi in base ai tuoi consumi quotidiani.</p>
-                <a href="calcolatore-batterie.html" class="btn">Apri il Calcolatore</a>
-            </div>
-            <!-- FINE TOOL 1 --><!-- INIZIO TOOL 2: SEZIONE CAVI -->
-            <div class="card">
-                <h2>⚡ Calcolatore Sezione Cavi</h2>
-                <p>Evita cadute di tensione e progetta in sicurezza il cablaggio del tuo impianto a 12V, 24V o 48V.</p>
-                <a href="sezione-cavi.html" class="btn">Apri il Calcolatore</a>
-            </div>
-            <!-- FINE TOOL 2 -->
+<div class="container">
+    <h1>Calcolatore Serie e Parallelo</h1>
+    <p class="subtitle">Scopri Volt e Ampere totali calcolando il collegamento della tua stringa di pannelli solari o del tuo banco batterie.</p>
 
-            <!-- Qui in futuro aggiungeremo le altre "card" per i nuovi tool -->
+    <div class="calculator-box">
+        
+        <div class="input-row">
+            <div class="form-group">
+                <label for="moduleVolt">Tensione singolo modulo (Volt):</label>
+                <input type="number" id="moduleVolt" placeholder="Es. 12 (batteria) o 20 (pannello)" min="1" step="0.1">
+            </div>
+            
+            <div class="form-group">
+                <label for="moduleAmp">Corrente singolo modulo (Ampere):</label>
+                <input type="number" id="moduleAmp" placeholder="Es. 100 (Ah) o 8 (A)" min="0.1" step="0.1">
+            </div>
         </div>
 
-        <footer>
-            <p>&copy; 2026 Off-Grid Calculators. Tutti i diritti riservati.</p>
-        </footer>
+        <div class="input-row">
+            <div class="form-group">
+                <label for="numModules">Numero di moduli identici:</label>
+                <input type="number" id="numModules" placeholder="Es. 2" min="2" step="1" value="2">
+            </div>
+
+            <div class="form-group">
+                <label for="connType">Tipo di collegamento:</label>
+                <select id="connType">
+                    <option value="serie" selected>In Serie (Polo + con Polo -)</option>
+                    <option value="parallelo">In Parallelo (Polo + con +, Polo - con -)</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="calc-btn" onclick="calculateConnection()">Calcola Valori Totali</button>
+
+        <div id="resultBox" class="result-box">
+            <h3>Risultato del Collegamento</h3>
+            
+            <div class="result-grid">
+                <div class="result-item">
+                    <span>Tensione Totale</span>
+                    <div id="totalVolts" class="result-value">-- V</div>
+                </div>
+                <div class="result-item">
+                    <span>Corrente Totale / Capacità</span>
+                    <div id="totalAmps" class="result-value">-- A</div>
+                </div>
+            </div>
+            
+            <p id="calcExplanation" style="font-size: 0.95rem; color: #555; margin-bottom: 20px;"></p>
+            
+            <a href="https://www.amazon.it/s?k=cavi+connettori+mc4+parallelo+serie+solare&tag=offgrid-calc-21" class="amazon-cta" target="_blank" rel="nofollow">Verifica disponibilità e prezzi su Amazon</a>
+        </div>
     </div>
+
+    <div class="editorial-content">
+        <h2>Guida al Collegamento in Serie e Parallelo per Impianti Off-Grid</h2>
+        <p>Collegare correttamente pannelli solari o batterie è uno dei passaggi più critici nella progettazione di un impianto elettrico off-grid per camper, baita o barca. Esistono due modi principali per unire più moduli: in serie o in parallelo. Ciascun metodo altera in modo specifico e differente la tensione (Volt) e la corrente (Ampere o Ah) totale del sistema.</p>
+        
+        <p>Nel <strong>collegamento in serie</strong>, si unisce il polo positivo di un modulo al polo negativo del successivo (come in una catena). Questo metodo ha una regola aurea: <em>somma le tensioni (Volt) mantenendo inalterata la corrente (Ampere)</em>. È la configurazione ideale per i pannelli solari moderni abbinati a regolatori di carica MPPT, poiché una tensione più alta riduce notevolmente le dispersioni energetiche lungo i cavi e permette di utilizzare sezioni di rame più sottili. Inoltre, il collegamento in serie è essenziale per portare due batterie da 12V a formare un banco a 24V, necessario per alimentare inverter di grossa taglia.</p>
+        
+        <p>Nel <strong>collegamento in parallelo</strong>, si uniscono tra loro tutti i poli positivi e, tramite un cavo separato, tutti i poli negativi (usando sdoppiatori o busbar). In questo caso la regola si inverte: <em>la tensione (Volt) rimane quella del singolo modulo, ma si sommano le correnti (Ampere) e le capacità (Ah)</em>. È il collegamento standard quando si vogliono aggiungere batterie a un sistema a 12V aumentandone l'autonomia senza modificarne la tensione, oppure quando si utilizzano regolatori solari PWM economici che non supportano alte tensioni in ingresso.</p>
+        
+        <p>Scegliere la configurazione sbagliata può danneggiare irrimediabilmente il regolatore di carica o causare malfunzionamenti di sicurezza all'inverter. Questo calcolatore ti permette di simulare istantaneamente il risultato finale per progettare il tuo banco batterie o la tua stringa fotovoltaica con assoluta precisione.</p>
+    </div>
+
+    <div class="faq-section">
+        <h2>Domande Frequenti (FAQ)</h2>
+        
+        <h3>Qual è la differenza tra il collegamento in serie e in parallelo?</h3>
+        <p>Nel collegamento in serie si collegano i poli opposti (positivo con negativo): le tensioni (Volt) si sommano, mentre la corrente (Ampere) rimane quella del singolo modulo. Nel collegamento in parallelo si uniscono i poli uguali (positivo con positivo, negativo con negativo): la tensione rimane invariata, mentre si sommano le correnti e le capacità (Ah).</p>
+
+        <h3>Posso collegare tra loro pannelli solari o batterie diverse?</h3>
+        <p>È fortemente sconsigliato. Collegando in parallelo moduli con Volt diversi, si creano correnti di cortocircuito interne. Collegando in serie moduli con Ampere diversi, il pannello o la batteria con la corrente minore farà da "collo di bottiglia", limitando le prestazioni di tutto l'impianto al suo valore e rischiando seri surriscaldamenti.</p>
+
+        <h3>Cos'è il collegamento misto serie-parallelo?</h3>
+        <p>Negli impianti fotovoltaici più grandi o nei grossi banchi batteria (es. 400Ah a 24V), si utilizza il collegamento serie-parallelo per aumentare contemporaneamente sia i Volt che gli Ampere. Si creano prima delle "stringhe" collegando alcuni moduli in serie per raggiungere la tensione desiderata, e poi si collegano queste stringhe tra loro in parallelo per incrementare la corrente o la capacità totale del banco.</p>
+    </div>
+
+    <footer>
+        <p>Strumento di calcolo stimato a scopo indicativo. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+    </footer>
+</div>
+
+<script>
+    function calculateConnection() {
+        const volts = parseFloat(document.getElementById('moduleVolt').value);
+        const amps = parseFloat(document.getElementById('moduleAmp').value);
+        const num = parseInt(document.getElementById('numModules').value);
+        const type = document.getElementById('connType').value;
+
+        if (isNaN(volts) || volts <= 0 || isNaN(amps) || amps <= 0 || isNaN(num) || num < 2) {
+            alert('Per favore, inserisci valori validi maggiori di zero. Il numero minimo di moduli è 2.');
+            return;
+        }
+
+        let totalVolts = 0;
+        let totalAmps = 0;
+        let explanationText = "";
+
+        if (type === 'serie') {
+            totalVolts = volts * num;
+            totalAmps = amps;
+            explanationText = "In SERIE le tensioni (Volt) si sommano (" + volts + "V × " + num + "), mentre la corrente (Ampere) resta quella di un singolo modulo.";
+        } else if (type === 'parallelo') {
+            totalVolts = volts;
+            totalAmps = amps * num;
+            explanationText = "In PARALLELO la tensione (Volt) resta inalterata (" + volts + "V), mentre le correnti (Ampere/Ah) si sommano (" + amps + "A × " + num + ").";
+        }
+
+        document.getElementById('totalVolts').innerText = totalVolts.toFixed(1).replace(/\.0$/, '') + " V";
+        document.getElementById('totalAmps').innerText = totalAmps.toFixed(1).replace(/\.0$/, '') + " A / Ah";
+        document.getElementById('calcExplanation').innerText = explanationText;
+        
+        document.getElementById('resultBox').style.display = "block";
+    }
+</script>
+
 </body>
 </html>
