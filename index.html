@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatori Off-Grid e Camper | Tool Gratuiti</title>
+    <meta name="description" content="Raccolta di strumenti e calcolatori gratuiti per progettare l'impianto elettrico off-grid del tuo camper, van o baita.">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #e67e22;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 40px; padding: 40px 20px; background-color: var(--primary); color: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header h1 { font-size: 2rem; margin-bottom: 10px; }
+        header p { font-size: 1.1rem; opacity: 0.9; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background-color: var(--card-bg); border-radius: 10px; padding: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: transform 0.2s, box-shadow 0.2s; border: 1px solid #e0e0e0; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+        .card h2 { font-size: 1.4rem; margin-bottom: 15px; color: var(--primary); }
+        .card p { font-size: 0.95rem; margin-bottom: 25px; color: #666; }
+        .btn { display: inline-block; background-color: var(--accent); color: white; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; width: 100%; text-align: center; transition: background-color 0.2s; }
+        .btn:hover { background-color: #d35400; }
+        footer { margin-top: 50px; text-align: center; font-size: 0.85rem; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tool & Calcolatori Off-Grid</h1>
+            <p>Progetta il tuo impianto elettrico in modo semplice e sicuro</p>
+        </header>
+
+        <div class="grid">
+            <!-- INIZIO TOOL 1: BATTERIE -->
+            <div class="card">
+                <h2>🔋 Calcolatore Batterie LiFePO4</h2>
+                <p>Scopri l'amperaggio esatto (Ah) necessario per la tua batteria servizi in base ai tuoi consumi quotidiani.</p>
+                <a href="calcolatore-batterie.html" class="btn">Apri il Calcolatore</a>
+            </div>
+            <!-- FINE TOOL 1 -->
+
+            <!-- Qui in futuro aggiungeremo le altre "card" per i nuovi tool -->
+        </div>
+
+        <footer>
+            <p>&copy; 2026 Off-Grid Calculators. Tutti i diritti riservati.</p>
+        </footer>
+    </div>
+</body>
+</html>
