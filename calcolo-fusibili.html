@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Fusibili 12V e 24V per Camper e Off-Grid</title>
+    <meta name="description" content="Calcola la dimensione corretta del fusibile per il tuo impianto a 12V o 24V. Dimensionamento sicuro con margine del 20-25% per camper e sistemi off-grid.">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Calcolatore Fusibili 12V/24V Off-Grid",
+      "operatingSystem": "Web",
+      "applicationCategory": "UtilitiesApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Strumento per il calcolo e il dimensionamento dei fusibili di protezione per impianti elettrici in corrente continua (12V/24V) di camper e sistemi off-grid."
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Il fusibile protegge il dispositivo o il cavo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Il compito principale di un fusibile in un impianto a 12V o 24V è proteggere il cavo elettrico, non il dispositivo. Il fusibile deve essere dimensionato per fondersi e interrompere il circuito prima che il cavo superi la sua portata massima (Ampacity), surriscaldandosi e innescando un potenziale incendio."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Quale tipo di fusibile usare (ATO, MIDI, MEGA, ANL)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "La scelta dipende dall'assorbimento. I fusibili a lama (ATO/ATC) sono ideali per piccoli carichi fino a 30A-40A (luci, pompa acqua). I fusibili MIDI sono perfetti per carichi medi fino a 100A (regolatori di carica, caricabatterie DC-DC). Per carichi molto elevati, come inverter grandi o banchi batterie, si usano fusibili MEGA o ANL che gestiscono correnti fino a 300A-500A."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Dove va posizionato il fusibile nell'impianto?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Per garantire la massima sicurezza, il fusibile deve essere installato il più vicino possibile alla fonte di energia (solitamente il polo positivo della batteria). La distanza raccomandata è entro 15-30 centimetri dal morsetto della batteria, in modo da proteggere l'intera lunghezza del cavo a valle in caso di cortocircuito."
+        }
+      }]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --amazon-btn: #f0c14b;
+            --amazon-btn-hover: #ddb347;
+            --amazon-text: #111111;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .calculator-box {
+            background-color: #f9fbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button.calc-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result-box span {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .sub-result {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .amazon-cta {
+            display: block;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto 0;
+            background-color: var(--amazon-btn);
+            color: var(--amazon-text);
+            text-align: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            border: 1px solid #a88734;
+        }
+
+        .amazon-cta:hover {
+            background-color: var(--amazon-btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .editorial-content {
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .editorial-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .editorial-content p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .faq-section h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.8rem; }
+            .result-value { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcolatore Dimensionamento Fusibili</h1>
+    <p class="subtitle">Calcola la taglia esatta del fusibile a 12V/24V per proteggere il tuo impianto off-grid dai cortocircuiti e dai sovraccarichi.</p>
+
+    <div class="calculator-box">
+        <div class="form-group">
+            <label for="ampsLoad">Carico Massimo Continuo (Ampere):</label>
+            <input type="number" id="ampsLoad" placeholder="Es. 30" min="0.1" step="0.1">
+            <small style="color: #7f8c8d; font-size: 0.85rem;">Inserisci l'assorbimento massimo in Ampere del dispositivo. Se hai solo i Watt, dividili per i Volt dell'impianto (es. 600W / 12V = 50A).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="margin">Margine di sicurezza (%):</label>
+            <select id="margin">
+                <option value="1.25" selected>25% (Consigliato - Regola d'oro impianti off-grid)</option>
+                <option value="1.20">20% (Per carichi molto costanti e lineari)</option>
+            </select>
+        </div>
+
+        <button class="calc-btn" onclick="calculateFuse()">Calcola Taglia Fusibile</button>
+
+        <div id="resultBox" class="result-box">
+            <span>Taglia Fusibile Commerciale Consigliata:</span>
+            <div id="fuseResult" class="result-value">-- A</div>
+            <div id="mathResult" class="sub-result">Valore teorico calcolato: -- A</div>
+            <p style="font-size: 0.9rem; color: #d35400; font-weight: 600; margin-bottom: 20px;">Attenzione: Verifica sempre che il cavo utilizzato supporti un amperaggio pari o superiore al fusibile consigliato.</p>
+            
+            <a href="https://www.amazon.it/s?k=fusibili+camper+12v+mega+midi+ato&tag=offgrid-calc-21" class="amazon-cta" target="_blank" rel="nofollow">Verifica disponibilità e prezzi su Amazon</a>
+        </div>
+    </div>
+
+    <div class="editorial-content">
+        <h2>Come calcolare e scegliere il fusibile giusto per l'impianto a 12V o 24V</h2>
+        <p>Il dimensionamento corretto dei fusibili è la regola d'oro per la sicurezza di ogni impianto elettrico off-grid, che si trovi in un camper, in una barca o in una baita solare. Il fusibile è l'anello debole "progettato" del circuito: in caso di anomalie, fonde e interrompe il passaggio di corrente prima che i cavi si surriscaldino provocando fumi tossici o, nel peggiore dei casi, incendi.</p>
+        
+        <p>Un errore molto comune è quello di scegliere un fusibile con lo stesso identico amperaggio del carico nominale (ad esempio, un fusibile da 40A per un carico da 40A). Questa è una pratica errata. I dispositivi elettrici, specialmente a 12V o 24V, possono avere leggere fluttuazioni, e l'ambiente di un veicolo ricreazionale è soggetto a sbalzi di temperatura. Un fusibile che lavora costantemente al 100% della sua capacità tende a riscaldarsi e, alla lunga, rischia di "saltare" per fatica termica anche in assenza di un vero cortocircuito.</p>
+        
+        <p>La regola standard nel settore del fotovoltaico e dell'automotive è quella di applicare un <strong>margine di maggiorazione compreso tra il 20% e il 25%</strong> rispetto al carico massimo continuo. Se il tuo regolatore di carica o inverter assorbe al massimo 50 Ampere, dovrai calcolare 50A x 1.25 = 62.5A. Poiché non esistono fusibili da 62.5A, si sceglierà la taglia commerciale standard immediatamente superiore, ovvero 70A (tipicamente formato MIDI o MAXI).</p>
+        
+        <p>Ricorda una regola fondamentale dell'elettrauto: <strong>il fusibile protegge il cavo, non l'apparecchio</strong>. Questo significa che, una volta calcolato il fusibile da 70A tramite questo strumento, dovrai assolutamente accertarti che la sezione del cavo elettrico che stai utilizzando sia in grado di trasportare tranquillamente più di 70 Ampere senza surriscaldarsi.</p>
+    </div>
+
+    <div class="faq-section">
+        <h2>Domande Frequenti (FAQ)</h2>
+        
+        <h3>Il fusibile protegge il dispositivo o il cavo?</h3>
+        <p>Il compito principale di un fusibile in un impianto a 12V o 24V è proteggere il cavo elettrico, non il dispositivo. Il fusibile deve essere dimensionato per fondersi e interrompere il circuito prima che il cavo superi la sua portata massima (Ampacity), surriscaldandosi e innescando un potenziale incendio.</p>
+
+        <h3>Quale tipo di fusibile usare (ATO, MIDI, MEGA, ANL)?</h3>
+        <p>La scelta dipende dall'assorbimento. I fusibili a lama (ATO/ATC) sono ideali per piccoli carichi fino a 30A-40A (luci, pompa acqua). I fusibili MIDI sono perfetti per carichi medi fino a 100A (regolatori di carica, caricabatterie DC-DC). Per carichi molto elevati, come inverter grandi o banchi batterie, si usano fusibili MEGA o ANL che gestiscono correnti fino a 300A-500A.</p>
+
+        <h3>Dove va posizionato il fusibile nell'impianto?</h3>
+        <p>Per garantire la massima sicurezza, il fusibile deve essere installato il più vicino possibile alla fonte di energia (solitamente il polo positivo della batteria). La distanza raccomandata è entro 15-30 centimetri dal morsetto della batteria, in modo da proteggere l'intera lunghezza del cavo a valle in caso di cortocircuito o schiacciamento accidentale lungo il percorso.</p>
+    </div>
+
+    <footer>
+        <p>Strumento di calcolo stimato a scopo indicativo. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+    </footer>
+</div>
+
+<script>
+    function calculateFuse() {
+        const load = parseFloat(document.getElementById('ampsLoad').value);
+        const margin = parseFloat(document.getElementById('margin').value);
+
+        if (isNaN(load) || load <= 0) {
+            alert('Per favore, inserisci un assorbimento in Ampere valido e maggiore di zero.');
+            return;
+        }
+
+        // Valore teorico con margine (20% o 25%)
+        const exactRating = load * margin;
+
+        // Taglie commerciali standard di fusibili (ATO/ATC, MIDI, MAXI, MEGA, ANL) in Ampere
+        const standardFuses = [2, 3, 5, 7.5, 10, 15, 20, 25, 30, 40, 50, 60, 70, 80, 100, 125, 150, 175, 200, 250, 300, 400, 500];
+        
+        let recommendedFuse = "Superiore a 500 A";
+        
+        for (let i = 0; i < standardFuses.length; i++) {
+            if (standardFuses[i] >= exactRating) {
+                recommendedFuse = standardFuses[i] + " A";
+                break;
+            }
+        }
+
+        document.getElementById('fuseResult').innerText = recommendedFuse;
+        document.getElementById('mathResult').innerText = "Valore teorico calcolato: " + exactRating.toFixed(2) + " A";
+        
+        document.getElementById('resultBox').style.display = "block";
+    }
+</script>
+
+</body>
+</html>
