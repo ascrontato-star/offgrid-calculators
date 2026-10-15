@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Pannelli Solari Camper e Off-Grid</title>
+    <meta name="description" content="Calcola quanti Watt di pannelli solari ti servono per il tuo impianto off-grid, van o camper in base ai tuoi consumi e alle ore di sole stimate.">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Calcolatore Pannelli Solari Off-Grid",
+      "operatingSystem": "Web",
+      "applicationCategory": "UtilitiesApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Strumento per il dimensionamento e il calcolo dei watt necessari per i pannelli solari di un impianto fotovoltaico off-grid."
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Cosa sono le ore di sole equivalenti (Peak Sun Hours)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Le ore di sole equivalenti non indicano semplicemente le ore di luce diurna, ma il numero di ore in cui l'irraggiamento solare raggiunge una potenza di 1000 Watt per metro quadrato. In estate nel sud Europa possono essere 5-6 ore, mentre in inverno possono scendere a 1-2 ore."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Devo considerare le perdite di sistema?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Assolutamente sì. Un pannello solare non produce mai il 100% dei Watt dichiarati a causa del calore, dell'inclinazione non perfetta, della sporcizia, dell'efficienza del regolatore di carica e delle cadute di tensione nei cavi. Generalmente si calcola un'efficienza reale del 75-80% per i sistemi MPPT e del 60-65% per i sistemi PWM."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Pannelli solari monocristallini o policristallini: quali scegliere?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Per camper e off-grid lo standard attuale è il monocristallino. Offre un'efficienza maggiore a parità di superficie occupata, il che è fondamentale quando lo spazio sul tetto è limitato. Inoltre, performa leggermente meglio in condizioni di scarsa illuminazione e temperature elevate."
+        }
+      }]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --amazon-btn: #f0c14b;
+            --amazon-btn-hover: #ddb347;
+            --amazon-text: #111111;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .calculator-box {
+            background-color: #f9fbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button.calc-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result-box span {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .amazon-cta {
+            display: block;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto 0;
+            background-color: var(--amazon-btn);
+            color: var(--amazon-text);
+            text-align: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            border: 1px solid #a88734;
+        }
+
+        .amazon-cta:hover {
+            background-color: var(--amazon-btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .editorial-content {
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .editorial-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .editorial-content p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .faq-section h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.8rem; }
+            .result-value { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcolatore Pannelli Solari</h1>
+    <p class="subtitle">Dimensiona l'impianto fotovoltaico per il tuo van, camper o baita in base ai tuoi consumi reali.</p>
+
+    <div class="calculator-box">
+        <div class="form-group">
+            <label for="dailyWh">Fabbisogno Energetico Giornaliero (Wattora - Wh):</label>
+            <input type="number" id="dailyWh" placeholder="Es. 1500" min="1" step="1">
+            <small style="color: #7f8c8d; font-size: 0.85rem;">Se conosci solo gli Ampere-ora (Ah) consumati, moltiplicali per la tensione della batteria (es. 50Ah x 12V = 600Wh).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="sunHours">Ore di Sole Equivalenti (Stima media):</label>
+            <select id="sunHours">
+                <option value="1.5">Inverno (1.5 - 2 ore)</option>
+                <option value="3" selected>Primavera/Autunno (3 - 4 ore)</option>
+                <option value="5.5">Estate (5 - 6 ore)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="efficiency">Efficienza del Sistema (Regolatore di Carica):</label>
+            <select id="efficiency">
+                <option value="0.80" selected>80% - Sistema con Regolatore MPPT (Consigliato)</option>
+                <option value="0.65">65% - Sistema con Regolatore PWM</option>
+            </select>
+        </div>
+
+        <button class="calc-btn" onclick="calculateSolar()">Calcola Pannelli Necessari</button>
+
+        <div id="resultBox" class="result-box">
+            <span>Potenza minima fotovoltaica richiesta:</span>
+            <div id="solarWatts" class="result-value">-- W</div>
+            <p style="font-size: 0.95rem; color: #555; margin-bottom: 20px;">Si consiglia di arrotondare sempre al modulo solare di taglia superiore commerciale (es. se ottieni 280W, opta per un pannello da 300W o due da 150W).</p>
+            
+            <a href="https://www.amazon.it/s?k=pannello+solare+monocristallino+camper&tag=offgrid-calc-21" class="amazon-cta" target="_blank" rel="nofollow">Verifica disponibilità e prezzi su Amazon</a>
+        </div>
+    </div>
+
+    <div class="editorial-content">
+        <h2>Come dimensionare correttamente i pannelli solari per il tuo impianto Off-Grid</h2>
+        <p>Progettare un impianto fotovoltaico autonomo (off-grid) per un camper, una barca o una baita richiede un calcolo accurato per evitare di rimanere senza energia. Il dimensionamento dei pannelli solari è un passaggio cruciale che dipende strettamente da tre fattori: i tuoi consumi giornalieri, l'irraggiamento solare della zona e le perdite fisiologiche dell'impianto.</p>
+        
+        <p>Il primo step è conoscere il <strong>fabbisogno energetico giornaliero</strong>, espresso in Wattora (Wh). Per trovarlo, basta sommare la potenza in Watt di ogni dispositivo che utilizzi (frigorifero, luci, pompa dell'acqua, ricarica pc) e moltiplicarla per le ore di utilizzo quotidiano. Ad esempio, una TV da 50W usata per 3 ore consumerà 150Wh.</p>
+        
+        <p>Il secondo fattore sono le <strong>ore di sole equivalenti (Peak Sun Hours)</strong>. Non bisogna confonderle con le semplici ore di luce. Le ore equivalenti misurano il momento della giornata in cui l'irraggiamento solare garantisce la massima resa teorica (1000 W/m²). Se viaggi in inverno, potresti avere solo 1.5 ore di sole utile per caricare le batterie, mentre in piena estate potresti superare le 5 ore. È buona norma progettare l'impianto basandosi sulle condizioni peggiori (inverno/mezze stagioni) per garantire l'autosufficienza.</p>
+        
+        <p>Infine, la formula deve prevedere l'<strong>efficienza del sistema</strong>. Pannelli piatti sul tetto del camper, calore accumulato, dispersioni nei cavi e l'uso del regolatore di carica comportano una perdita di energia. Un regolatore MPPT moderno riesce a mantenere un'efficienza globale intorno all'80%, mentre i più vecchi ed economici sistemi PWM si fermano spesso al 65%. Il nostro calcolatore integra già queste perdite per restituirti un valore sicuro e realistico.</p>
+    </div>
+
+    <div class="faq-section">
+        <h2>Domande Frequenti (FAQ)</h2>
+        
+        <h3>Cosa sono le ore di sole equivalenti (Peak Sun Hours)?</h3>
+        <p>Le ore di sole equivalenti non indicano semplicemente le ore di luce diurna, ma il numero di ore in cui l'irraggiamento solare raggiunge una potenza di 1000 Watt per metro quadrato. In estate nel sud Europa possono essere 5-6 ore, mentre in inverno possono scendere a 1-2 ore.</p>
+
+        <h3>Devo considerare le perdite di sistema?</h3>
+        <p>Assolutamente sì. Un pannello solare non produce mai il 100% dei Watt dichiarati a causa del calore, dell'inclinazione non perfetta, della sporcizia, dell'efficienza del regolatore di carica e delle cadute di tensione nei cavi. Generalmente si calcola un'efficienza reale del 75-80% per i sistemi MPPT e del 60-65% per i sistemi PWM.</p>
+
+        <h3>Pannelli solari monocristallini o policristallini: quali scegliere?</h3>
+        <p>Per camper e off-grid lo standard attuale è il monocristallino. Offre un'efficienza maggiore a parità di superficie occupata, il che è fondamentale quando lo spazio sul tetto è limitato. Inoltre, performa leggermente meglio in condizioni di scarsa illuminazione e temperature elevate.</p>
+    </div>
+
+    <footer>
+        <p>Strumento di calcolo stimato a scopo indicativo. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+    </footer>
+</div>
+
+<script>
+    function calculateSolar() {
+        const dailyWh = parseFloat(document.getElementById('dailyWh').value);
+        const sunHours = parseFloat(document.getElementById('sunHours').value);
+        const efficiency = parseFloat(document.getElementById('efficiency').value);
+
+        if (isNaN(dailyWh) || dailyWh <= 0) {
+            alert('Per favore, inserisci un fabbisogno energetico (Wh) valido e maggiore di zero.');
+            return;
+        }
+
+        // Calcolo energia reale necessaria considerando le perdite
+        const realEnergyRequired = dailyWh / efficiency;
+        
+        // Calcolo della potenza del pannello in Watt
+        const requiredSolarWatts = realEnergyRequired / sunHours;
+
+        // Mostriamo il risultato arrotondato
+        document.getElementById('solarWatts').innerText = Math.ceil(requiredSolarWatts) + " Watt";
+        document.getElementById('resultBox').style.display = "block";
+    }
+</script>
+
+</body>
+</html>
