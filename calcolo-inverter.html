@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Inverter 220V: Dimensionamento Camper e Off-Grid</title>
+    <meta name="description" content="Calcolatore gratuito per dimensionare l'inverter 220V del tuo camper o impianto off-grid. Calcola la potenza continua e il picco di spunto in Watt.">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Calcolatore Dimensionamento Inverter Off-Grid",
+      "operatingSystem": "Web",
+      "applicationCategory": "UtilitiesApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Strumento per calcolare la potenza corretta dell'inverter a 220V in base ai carichi continui e al picco di spunto per impianti solari e camper."
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Qual è la differenza tra inverter ad onda pura e onda modificata?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Un inverter ad onda sinusoidale pura replica esattamente la corrente di rete domestica. È fondamentale per alimentare apparecchiature elettroniche sensibili, PC, televisori e motori. L'onda modificata è più economica ma può danneggiare dispositivi complessi e causare ronzii o surriscaldamenti."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Cos'è il picco di spunto e perché è importante?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Il picco di spunto è l'energia extra richiesta dai dispositivi con motore elettrico (come frigoriferi, condizionatori, phon o pompe dell'acqua) nel momento esatto in cui vengono accesi. Questo assorbimento iniziale dura frazioni di secondo ma può essere dalle 3 alle 5 volte superiore al consumo nominale continuo."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Perché è necessario applicare un margine di sicurezza?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Far lavorare un inverter costantemente al 100% della sua capacità ne riduce drasticamente la vita utile a causa del surriscaldamento dei componenti interni. Si consiglia sempre di aggiungere un margine di sicurezza del 20-30% rispetto al carico continuo massimo previsto, per garantire efficienza e longevità."
+        }
+      }]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --amazon-btn: #f0c14b;
+            --amazon-btn-hover: #ddb347;
+            --amazon-text: #111111;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .calculator-box {
+            background-color: #f9fbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button.calc-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result-box span {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .sub-result {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .amazon-cta {
+            display: block;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto 0;
+            background-color: var(--amazon-btn);
+            color: var(--amazon-text);
+            text-align: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            border: 1px solid #a88734;
+        }
+
+        .amazon-cta:hover {
+            background-color: var(--amazon-btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .editorial-content {
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .editorial-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .editorial-content p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .faq-section h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.8rem; }
+            .result-value { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcolatore Dimensionamento Inverter</h1>
+    <p class="subtitle">Scopri la taglia corretta dell'inverter 220V per il tuo impianto solare in base ai tuoi carichi e ai picchi di accensione.</p>
+
+    <div class="calculator-box">
+        <div class="form-group">
+            <label for="totalWatts">Somma dei carichi continui simultanei (Watt):</label>
+            <input type="number" id="totalWatts" placeholder="Es. 800" min="1" step="1">
+            <small style="color: #7f8c8d; font-size: 0.85rem;">Inserisci la somma dei Watt degli apparecchi che pensi di accendere <strong>contemporaneamente</strong> (es. TV 50W + PC 100W + Phon 650W = 800W).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="inductiveWatts">Di cui carichi induttivi/con motore (Watt):</label>
+            <input type="number" id="inductiveWatts" placeholder="Es. 150" min="0" step="1">
+            <small style="color: #7f8c8d; font-size: 0.85rem;">Inserisci solo i Watt degli apparecchi con motore/compressore (frigo, clima, trapano) inclusi nel totale sopra. Se non ne hai, inserisci 0.</small>
+        </div>
+
+        <div class="form-group">
+            <label for="safetyMargin">Margine di sicurezza (%):</label>
+            <select id="safetyMargin">
+                <option value="1.2" selected>20% - Standard (Consigliato per lunga durata)</option>
+                <option value="1.3">30% - Prudenziale (Per carichi pesanti e clima caldo)</option>
+                <option value="1.0">0% - Nessun margine (Non raccomandato)</option>
+            </select>
+        </div>
+
+        <button class="calc-btn" onclick="calculateInverter()">Calcola Taglia Inverter</button>
+
+        <div id="resultBox" class="result-box">
+            <span>Taglia Inverter Consigliata (Onda Pura):</span>
+            <div id="recommendedSize" class="result-value">-- W</div>
+            <div id="detailsOutput" class="sub-result">Potenza continua richiesta: -- W | Picco stimato: -- W</div>
+            
+            <a href="https://www.amazon.it/s?k=inverter+onda+pura+camper&tag=offgrid-calc-21" class="amazon-cta" target="_blank" rel="nofollow">Verifica disponibilità e prezzi su Amazon</a>
+        </div>
+    </div>
+
+    <div class="editorial-content">
+        <h2>Come scegliere l'inverter 220V giusto per il camper o la baita</h2>
+        <p>Il cuore di un impianto elettrico off-grid, che permette di utilizzare i normali elettrodomestici di casa (a 220V/230V) partendo dall'energia immagazzinata nelle batterie a 12V, 24V o 48V, è l'<strong>inverter</strong>. Scegliere la taglia sbagliata non significa solo sprecare denaro, ma rischiare blocchi continui del sistema e danni alle apparecchiature.</p>
+        
+        <p>Per dimensionare correttamente un inverter, il primo passo è calcolare la <strong>somma dei carichi continui</strong>. Fai una lista degli apparecchi che intendi accendere simultaneamente. Ad esempio: un laptop (60W), un televisore (40W) e delle luci (20W) generano un carico di 120W. A questo totale, una regola fondamentale dell'impiantistica impone di aggiungere un <strong>margine di sicurezza del 20-30%</strong>. Questo evita che l'inverter lavori costantemente al limite della sua capacità, prevenendo il surriscaldamento e prolungandone la vita utile.</p>
+        
+        <p>Il secondo fattore, spesso trascurato dai principianti, è il <strong>picco di spunto</strong>. I carichi resistivi (come resistenze termiche o lampadine) consumano in modo lineare. Al contrario, i carichi induttivi dotati di motore o compressore (frigoriferi, condizionatori, utensili elettrici, asciugacapelli) richiedono uno sforzo enorme al momento dell'accensione per vincere l'inerzia. Un piccolo frigorifero da 80W può generare un picco istantaneo di oltre 300W. Se l'inverter non è in grado di gestire questo "spunto", andrà in blocco di protezione emettendo un allarme sonoro.</p>
+        
+        <p>Infine, ricorda sempre di preferire un inverter a <strong>onda sinusoidale pura</strong>. Anche se più costosi rispetto a quelli ad onda modificata, erogano una corrente identica (se non migliore) a quella della rete domestica, indispensabile per non bruciare alimentatori, schede elettroniche sensibili o far surriscaldare i motori.</p>
+    </div>
+
+    <div class="faq-section">
+        <h2>Domande Frequenti (FAQ)</h2>
+        
+        <h3>Qual è la differenza tra inverter ad onda pura e onda modificata?</h3>
+        <p>Un inverter ad onda sinusoidale pura replica esattamente la corrente di rete domestica. È fondamentale per alimentare apparecchiature elettroniche sensibili, PC, televisori e motori. L'onda modificata è più economica ma può danneggiare dispositivi complessi e causare ronzii o surriscaldamenti.</p>
+
+        <h3>Cos'è il picco di spunto e perché è importante?</h3>
+        <p>Il picco di spunto è l'energia extra richiesta dai dispositivi con motore elettrico (come frigoriferi, condizionatori, phon o pompe dell'acqua) nel momento esatto in cui vengono accesi. Questo assorbimento iniziale dura frazioni di secondo ma può essere dalle 3 alle 5 volte superiore al consumo nominale continuo.</p>
+
+        <h3>Perché è necessario applicare un margine di sicurezza?</h3>
+        <p>Far lavorare un inverter costantemente al 100% della sua capacità ne riduce drasticamente la vita utile a causa del surriscaldamento dei componenti interni. Si consiglia sempre di aggiungere un margine di sicurezza del 20-30% rispetto al carico continuo massimo previsto, per garantire efficienza e longevità.</p>
+    </div>
+
+    <footer>
+        <p>Strumento di calcolo stimato a scopo indicativo. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+    </footer>
+</div>
+
+<script>
+    function calculateInverter() {
+        const totalWatts = parseFloat(document.getElementById('totalWatts').value);
+        const inductiveWatts = parseFloat(document.getElementById('inductiveWatts').value);
+        const safetyMargin = parseFloat(document.getElementById('safetyMargin').value);
+
+        if (isNaN(totalWatts) || totalWatts <= 0) {
+            alert('Per favore, inserisci un carico totale in Watt valido.');
+            return;
+        }
+        
+        let validInductive = isNaN(inductiveWatts) ? 0 : inductiveWatts;
+        if (validInductive > totalWatts) {
+            alert('Il carico induttivo non può essere superiore al carico totale.');
+            return;
+        }
+
+        // Calcolo Potenza Continua con Margine di Sicurezza
+        const requiredContinuous = totalWatts * safetyMargin;
+
+        // Calcolo Picco di Spunto
+        // Si assume un moltiplicatore di x3 per i carichi induttivi alla partenza
+        const resistiveWatts = totalWatts - validInductive;
+        const requiredSurge = resistiveWatts + (validInductive * 3);
+
+        // Determinazione Taglia Commerciale Inverter (considerando sia il continuo che il picco)
+        // La maggior parte degli inverter ha un picco pari al doppio della potenza continua
+        const neededCommercialBase = Math.max(requiredContinuous, requiredSurge / 2);
+
+        const standardSizes = [300, 500, 1000, 1500, 2000, 2500, 3000, 4000, 5000, 8000, 10000];
+        let recommendedSize = "Superiore a 10000W";
+
+        for (let i = 0; i < standardSizes.length; i++) {
+            if (standardSizes[i] >= neededCommercialBase) {
+                recommendedSize = standardSizes[i] + " W";
+                break;
+            }
+        }
+
+        document.getElementById('recommendedSize').innerText = recommendedSize;
+        document.getElementById('detailsOutput').innerText = "Potenza continua richiesta: " + Math.ceil(requiredContinuous) + " W | Picco stimato: " + Math.ceil(requiredSurge) + " W";
+        document.getElementById('resultBox').style.display = "block";
+    }
+</script>
+
+</body>
+</html>
