@@ -3,154 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcolatore Batterie LiFePO4 per Camper e Off-Grid | Dimensionamento Esatto</title>
-    <meta name="description" content="Calcola con precisione quanti Ampere-ora (Ah) servono per la batteria servizi al litio del tuo camper o impianto solare. Evita sprechi ed errori di dimensionamento.">
+    <title>Calcolo Dimensionamento Batterie Camper e Off-Grid (Ah)</title>
+    <meta name="description" content="Calcola la capacità in Ah necessaria per il tuo banco batterie servizi (Litio o AGM) in base ai tuoi consumi e ai giorni di autonomia desiderati.">
     
-    <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg: #f8fafc;
-            --card: #ffffff;
-            --text: #1e293b;
-            --border: #e2e8f0;
-            --accent: #f59e0b;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg); color: var(--text); line-height: 1.6; padding: 20px; }
-        .container { max-width: 800px; margin: 0 auto; }
-        header { text-align: center; margin-bottom: 40px; }
-        h1 { font-size: 2.2rem; color: var(--text); margin-bottom: 10px; line-height: 1.2; }
-        .calculator { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); margin-bottom: 40px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 1rem; }
-        button { width: 100%; background-color: var(--primary); color: white; border: none; padding: 16px; font-size: 1.1rem; font-weight: bold; border-radius: 6px; cursor: pointer; transition: background 0.3s; margin-top: 10px; }
-        button:hover { background-color: var(--primary-hover); }
-        .result-box { margin-top: 30px; padding: 25px; background-color: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 8px; display: none; text-align: center; }
-        .result-value { font-size: 2.8rem; font-weight: bold; color: #166534; line-height: 1; margin: 10px 0; }
-        .amazon-btn { display: block; background-color: var(--accent); color: #fff; text-decoration: none; padding: 16px 20px; border-radius: 6px; font-weight: bold; margin-top: 25px; transition: opacity 0.3s; }
-        .amazon-btn:hover { opacity: 0.9; }
-        .content { background: var(--card); padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-        h2 { font-size: 1.8rem; margin-bottom: 15px; margin-top: 30px; color: var(--text); }
-        h3 { font-size: 1.3rem; margin-bottom: 10px; margin-top: 25px; color: var(--primary); }
-        p { margin-bottom: 15px; color: #475569; }
-        footer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 0.9rem; color: #64748b; }
-    </style>
-
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "Calcolatore Dimensionamento Batterie LiFePO4",
+      "name": "Calcolatore Dimensionamento Batterie Off-Grid",
       "operatingSystem": "Web",
       "applicationCategory": "UtilitiesApplication",
-      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
-      "description": "Calcola gli Ampere-ora (Ah) necessari per una batteria al litio LiFePO4 per camper e impianti off-grid."
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Strumento per calcolare la capacità corretta in Ampere-ora (Ah) della batteria servizi di un camper o impianto solare, in base al consumo e al limite di scarica (DoD)."
     }
     </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Quanti giorni di autonomia dovrei calcolare per un camper?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Lo standard per un camper o un van è calcolare tra i 2 e i 3 giorni di autonomia. Questo ti garantisce di avere energia sufficiente per superare un paio di giornate di pioggia o cielo molto nuvoloso senza che i pannelli solari riescano a ricaricare adeguatamente le batterie."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Perché per l'AGM serve una batteria molto più grande rispetto al Litio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "La differenza sta nel Limite di Scarica (DoD). Le batterie al piombo, AGM o Gel si rovinano irreparabilmente se scaricate sotto il 50%. Quindi, se hai bisogno di 100Ah effettivi, devi comprare una batteria AGM da 200Ah. Il Litio (LiFePO4) invece può essere scaricato in sicurezza fino al 90-100%, permettendoti di comprare una batteria grande la metà a parità di energia utilizzabile."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Meglio un impianto a 12V, 24V o 48V?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Per consumi bassi o medi (fino a 1500W-2000W di inverter), i 12V sono perfetti e rappresentano lo standard dei camper. Se devi alimentare grossi carichi come piastre a induzione, condizionatori o attrezzature pesanti in baite isolate, passare a 24V o 48V dimezza o riduce a un quarto gli Ampere in transito, permettendoti di usare cavi molto più sottili e regolatori di carica più piccoli."
+        }
+      }]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --amazon-btn: #f0c14b;
+            --amazon-btn-hover: #ddb347;
+            --amazon-text: #111111;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .calculator-box {
+            background-color: #f9fbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .input-row .form-group {
+            flex: 1;
+        }
+
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button.calc-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result-box span {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .sub-result {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .amazon-cta {
+            display: block;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto 0;
+            background-color: var(--amazon-btn);
+            color: var(--amazon-text);
+            text-align: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            border: 1px solid #a88734;
+        }
+
+        .amazon-cta:hover {
+            background-color: var(--amazon-btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .editorial-content {
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .editorial-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .editorial-content p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .faq-section h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.8rem; }
+            .result-value { font-size: 2rem; }
+            .input-row { flex-direction: column; gap: 0; }
+        }
+    </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>Calcolatore Dimensionamento Batterie LiFePO4</h1>
-        <p>Inserisci i consumi stimati per scoprire l'amperaggio esatto della batteria servizi necessaria al tuo impianto.</p>
-    </header>
+    <h1>Calcolatore Dimensionamento Batterie</h1>
+    <p class="subtitle">Scopri quanti Ah ti servono per il tuo banco batterie in base al tuo consumo energetico e ai giorni di autonomia previsti.</p>
 
-    <div class="calculator">
+    <div class="calculator-box">
         <div class="form-group">
-            <label for="watt">Consumo totale giornaliero (Wattora - Wh):</label>
-            <input type="number" id="watt" placeholder="Es. 1200" required>
-            <small style="color: #64748b; display: block; margin-top: 5px;">Somma i Watt degli elettrodomestici moltiplicati per le ore di utilizzo quotidiano.</small>
+            <label for="dailyWh">Fabbisogno Energetico Giornaliero (Wh):</label>
+            <input type="number" id="dailyWh" placeholder="Es. 800" min="10" step="10">
+            <small style="color: #7f8c8d; font-size: 0.85rem;">La somma dei Watt di tutti i tuoi dispositivi moltiplicata per le ore di utilizzo (es. TV da 50W x 2 ore = 100Wh).</small>
+        </div>
+
+        <div class="input-row">
+            <div class="form-group">
+                <label for="autonomyDays">Giorni di autonomia senza sole:</label>
+                <input type="number" id="autonomyDays" placeholder="Es. 2" value="2" min="1" step="1">
+            </div>
+
+            <div class="form-group">
+                <label for="sysVoltage">Tensione Impianto (Volt):</label>
+                <select id="sysVoltage">
+                    <option value="12" selected>12V</option>
+                    <option value="24">24V</option>
+                    <option value="48">48V</option>
+                </select>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="volts">Voltaggio dell'impianto:</label>
-            <select id="volts">
-                <option value="12">12V (Standard Camper / Van)</option>
-                <option value="24">24V (Impianti Off-Grid Medi)</option>
-                <option value="48">48V (Baite / Impianti Grandi)</option>
+            <label for="batteryType">Tipo e Chimica della Batteria (DoD):</label>
+            <select id="batteryType">
+                <option value="0.9" selected>Litio LiFePO4 (Scarica massima 90%)</option>
+                <option value="0.5">Piombo / AGM / Gel (Scarica massima 50%)</option>
+                <option value="0.8">Trazione / Carbonio (Scarica massima 80%)</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <label for="days">Giorni di autonomia (senza sole/motore):</label>
-            <select id="days">
-                <option value="1">1 Giorno</option>
-                <option value="2">2 Giorni</option>
-                <option value="3">3 Giorni</option>
-            </select>
-        </div>
+        <button class="calc-btn" onclick="calculateBattery()">Calcola Taglia Batteria</button>
 
-        <button onclick="calculate()">Calcola Capacità Necessaria</button>
-
-        <div class="result-box" id="result-box">
-            <p style="color: #166534; font-weight: 600;">La capacità minima richiesta è:</p>
-            <div class="result-value" id="result-ah">-- Ah</div>
-            <p style="font-weight: bold; color: #1e293b; font-size: 1.1rem; margin-top: 15px;" id="recommendation">Taglia commerciale consigliata: --</p>
+        <div id="resultBox" class="result-box">
+            <span>Capacità Commerciale Consigliata:</span>
+            <div id="batteryResult" class="result-value">-- Ah</div>
+            <div id="mathResult" class="sub-result">Energia totale richiesta: -- Wh</div>
             
-            <a href="#" class="amazon-btn" id="amazon-link" target="_blank" rel="nofollow noopener">Verifica disponibilità e prezzi su Amazon</a>
+            <a href="https://www.amazon.it/s?k=batteria+lifepo4+camper+100ah+200ah&tag=offgrid-calc-21" class="amazon-cta" target="_blank" rel="nofollow">Verifica disponibilità e prezzi su Amazon</a>
         </div>
     </div>
 
-    <div class="content">
-        <h2>Come dimensionare correttamente la batteria servizi al litio</h2>
-        <p>Progettare l'impianto elettrico di un camper, di un van camperizzato o di una baita off-grid richiede calcoli precisi. Il cuore dell'intero sistema è la batteria servizi, e lo standard tecnologico attuale è rappresentato dalle celle <strong>LiFePO4 (Litio-Ferro-Fosfato)</strong>.</p>
-        <p>La differenza principale tra questa tecnologia e le tradizionali batterie AGM o al piombo acido risiede nella profondità di scarica (DoD). Mentre una batteria al piombo non dovrebbe mai essere scaricata oltre il 50% per evitare danni irreversibili alle piastre interne, le batterie LiFePO4 permettono una scarica sicura fino al 90%. Questo significa che, a parità di amperaggio nominale, un accumulatore al litio offre quasi il doppio dell'energia realmente utilizzabile, con un peso nettamente inferiore.</p>
-        <p>Il calcolatore converte i Wattora (Wh) del tuo fabbisogno in Ampere-ora (Ah) utilizzando la Legge di Ohm (Ah = Wh / V). Al risultato matematico puro viene applicato un margine di sicurezza strutturale del 10%, essenziale per garantire che le celle non scendano mai al di sotto della soglia critica, preservando i cicli di vita dichiarati dal produttore.</p>
+    <div class="editorial-content">
+        <h2>Come dimensionare la batteria servizi per camper e impianti off-grid</h2>
+        <p>Il dimensionamento della batteria è il cuore pulsante di qualsiasi progettazione elettrica off-grid. Sbagliare questo calcolo significa ritrovarsi senza luce, con il frigorifero spento o con la pompa dell'acqua bloccata nel bel mezzo della propria vacanza o permanenza in baita.</p>
+        
+        <p>Il primo passo è stabilire il proprio <strong>fabbisogno energetico giornaliero</strong> espresso in Wattora (Wh). Per farlo, basta fare un inventario dei dispositivi che si usano (es. luci a led, pompa dell'acqua, frigorifero, ricarica smartphone) e moltiplicare i Watt nominali per le ore di utilizzo quotidiano. Un tipico camper moderno con frigorifero a compressore consuma circa tra gli 800 e i 1200 Wh al giorno.</p>
+        
+        <p>Il secondo fattore cruciale sono i <strong>giorni di autonomia</strong>. Un impianto solare non produce la stessa energia tutti i giorni: in caso di cielo coperto, pioggia o parcheggio all'ombra, la produzione fotovoltaica crolla vertiginosamente. La regola aurea è dimensionare il banco batterie per garantire almeno 2 o 3 giorni completi di autonomia totale senza alcun apporto esterno.</p>
+        
+        <p>Infine, bisogna fare i conti con la chimica. Il <strong>Depth of Discharge (DoD)</strong> o Limite di Scarica ci indica quanta parte della batteria possiamo effettivamente usare. Le classiche batterie al piombo, Gel e AGM non devono mai essere scaricate sotto il 50%, pena la solfatazione rapida. Questo significa che devi installare il doppio della capacità nominale di cui hai bisogno. Le moderne <strong>batterie al Litio (LiFePO4)</strong>, invece, offrono un DoD sfruttabile in totale sicurezza fino al 90-100%, dimezzando di fatto i pesi e gli ingombri a parità di energia fornita.</p>
+    </div>
 
+    <div class="faq-section">
         <h2>Domande Frequenti (FAQ)</h2>
         
-        <h3>Perché investire in una batteria LiFePO4 invece di una AGM?</h3>
-        <p>Nonostante il costo iniziale superiore, il litio-ferro-fosfato garantisce oltre 4.000 cicli di ricarica contro i 500-600 di una normale AGM. Inoltre, il voltaggio rimane stabile fino all'esaurimento della carica, evitando che gli elettrodomestici (come i frigoriferi a compressore) vadano in blocco per calo di tensione. Sul lungo periodo, il costo per ciclo rende il litio la scelta più economica.</p>
+        <h3>Quanti giorni di autonomia dovrei calcolare per un camper?</h3>
+        <p>Lo standard per un camper o un van è calcolare tra i 2 e i 3 giorni di autonomia. Questo ti garantisce di avere energia sufficiente per superare un paio di giornate di pioggia o cielo molto nuvoloso senza che i pannelli solari riescano a ricaricare adeguatamente le batterie.</p>
 
-        <h3>Quale BMS (Battery Management System) è necessario?</h3>
-        <p>Il BMS protegge le celle da sovraccarichi, cortocircuiti e temperature estreme. È fondamentale dimensionare il BMS in base all'assorbimento massimo simultaneo del tuo impianto. Se utilizzi un inverter da 2000W a 12V (che assorbe circa 166A a pieno carico), dovrai assicurarti che la batteria abbia un BMS con scarica continua da almeno 200A.</p>
+        <h3>Perché per l'AGM serve una batteria molto più grande rispetto al Litio?</h3>
+        <p>La differenza sta nel Limite di Scarica (DoD). Le batterie al piombo, AGM o Gel si rovinano irreparabilmente se scaricate sotto il 50%. Quindi, se hai bisogno di 100Ah effettivi, devi comprare una batteria AGM da 200Ah. Il Litio (LiFePO4) invece può essere scaricato in sicurezza fino al 90-100%, permettendoti di comprare una batteria grande la metà a parità di energia utilizzabile.</p>
 
-        <h3>Posso caricare la batteria al litio con il vecchio alternatore?</h3>
-        <p>Collegare direttamente una batteria LiFePO4 all'alternatore del veicolo tramite un semplice relè parallelatore è pericoloso. Le batterie al litio assorbono corrente in modo estremamente avido, rischiando di surriscaldare e bruciare l'alternatore. È obbligatorio installare un caricabatterie DC-DC che regoli il flusso di corrente in modo intelligente.</p>
+        <h3>Meglio un impianto a 12V, 24V o 48V?</h3>
+        <p>Per consumi bassi o medi (fino a 1500W-2000W di inverter), i 12V sono perfetti e rappresentano lo standard del mondo automotive e dei camper. Se devi alimentare grossi carichi come piastre a induzione, condizionatori o attrezzature pesanti in baite isolate, passare a 24V o 48V dimezza o riduce a un quarto gli Ampere in transito nei cavi, permettendoti di usare sezioni di rame molto più sottili e apparecchiature più efficienti.</p>
     </div>
 
     <footer>
-        <p>Strumento di calcolo stimato a scopo indicativo basato sul 90% di profondità di scarica massima tollerata. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+        <p>Strumento di calcolo stimato a scopo indicativo. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
     </footer>
 </div>
 
 <script>
-    function calculate() {
-        const wh = parseFloat(document.getElementById('watt').value);
-        const volts = parseFloat(document.getElementById('volts').value);
-        const days = parseFloat(document.getElementById('days').value);
+    function calculateBattery() {
+        const dailyWh = parseFloat(document.getElementById('dailyWh').value);
+        const days = parseFloat(document.getElementById('autonomyDays').value);
+        const voltage = parseFloat(document.getElementById('sysVoltage').value);
+        const dod = parseFloat(document.getElementById('batteryType').value);
 
-        if (isNaN(wh) || wh <= 0) {
-            alert("Inserisci un valore numerico valido per i Wattora giornalieri.");
+        if (isNaN(dailyWh) || dailyWh <= 0 || isNaN(days) || days <= 0) {
+            alert('Per favore, inserisci un fabbisogno energetico e dei giorni di autonomia validi (maggiori di zero).');
             return;
         }
 
-        const totalWh = wh * days;
-        const requiredAh = totalWh / volts;
-        const safeAh = Math.ceil(requiredAh / 0.90);
+        // Calcolo energia totale necessaria in Wh (per i giorni stabiliti)
+        const totalWhNeeded = dailyWh * days;
+        
+        // Conversione da Wh a Ah in base al voltaggio dell'impianto
+        const totalAhNeeded = totalWhNeeded / voltage;
+        
+        // Maggiorazione in base al limite di scarica (DoD)
+        const requiredAh = totalAhNeeded / dod;
 
-        document.getElementById('result-ah').innerText = safeAh + " Ah";
-
-        let recommendation = "";
-        let searchAh = 100;
-
-        if (safeAh <= 50) { recommendation = "Batteria da 50Ah"; searchAh = 50; }
-        else if (safeAh <= 100) { recommendation = "Batteria da 100Ah"; searchAh = 100; }
-        else if (safeAh <= 150) { recommendation = "Batteria da 150Ah"; searchAh = 150; }
-        else if (safeAh <= 200) { recommendation = "Batteria da 200Ah"; searchAh = 200; }
-        else if (safeAh <= 300) { recommendation = "Batteria da 300Ah"; searchAh = 300; }
-        else { recommendation = "Sistema parallelo (es. 2x 200Ah)"; searchAh = 200; }
-
-        document.getElementById('recommendation').innerText = "Taglia commerciale consigliata: " + recommendation;
-
-        const searchTerm = `batteria lifepo4 ${volts}v ${searchAh}ah`;
-        const amazonUrl = `https://www.amazon.it/s?k=${encodeURIComponent(searchTerm)}&tag=offgrid-calc-21`;
-        document.getElementById('amazon-link').href = amazonUrl;
-
-        document.getElementById('result-box').style.display = 'block';
+        document.getElementById('batteryResult').innerText = Math.ceil(requiredAh) + " Ah";
+        document.getElementById('mathResult').innerText = "Energia totale per " + days + " giorni: " + Math.ceil(totalWhNeeded) + " Wh (" + Math.ceil(totalAhNeeded) + " Ah teorici a " + voltage + "V)";
+        
+        document.getElementById('resultBox').style.display = "block";
     }
 </script>
 
