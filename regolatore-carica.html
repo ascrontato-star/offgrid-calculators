@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Regolatore di Carica Solare MPPT e PWM</title>
+    <meta name="description" content="Calcola gli Ampere necessari per il regolatore di carica MPPT o PWM del tuo impianto solare a 12V, 24V o 48V. Dimensionamento sicuro per camper e off-grid.">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Calcolatore Regolatore di Carica Solare",
+      "operatingSystem": "Web",
+      "applicationCategory": "UtilitiesApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "description": "Strumento per il calcolo e il dimensionamento dei regolatori di carica fotovoltaici MPPT e PWM in base ai Watt dei pannelli e alla tensione delle batterie."
+    }
+    </script>
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "Meglio un regolatore MPPT o PWM?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Per quasi tutti gli impianti off-grid moderni, l'MPPT (Maximum Power Point Tracking) è nettamente superiore. Riesce a convertire la tensione in eccesso dei pannelli in Ampere aggiuntivi verso la batteria, garantendo una resa superiore del 20-30% rispetto a un PWM, che invece 'taglia' la tensione sprecando energia."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Perché si divide per i Volt della batteria e non per quelli del pannello?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Il lavoro del regolatore di carica è abbassare la tensione alta del pannello solare alla tensione corretta di carica della batteria. Di conseguenza, tutta la potenza in Watt transiterà nei cavi verso la batteria ai Volt della batteria stessa. Un pannello da 300W immetterà circa 25A in una batteria a 12V (300/12), indipendentemente dal fatto che il pannello operi a 20V o 40V."
+        }
+      }, {
+        "@type": "Question",
+        "name": "Cosa succede se metto troppi pannelli solari su un regolatore piccolo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Dipende dalla qualità del dispositivo. Un regolatore MPPT di alta gamma (come Victron) andrà in limitazione (clipping), erogando la sua corrente massima nominale e scartando il resto in sicurezza. Un regolatore PWM economico, invece, tenderà a surriscaldarsi e i fusibili interni potrebbero saltare o il dispositivo potrebbe bruciarsi."
+        }
+      }]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-color: #f4f7f6;
+            --container-bg: #ffffff;
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e67e22;
+            --accent-hover: #d35400;
+            --amazon-btn: #f0c14b;
+            --amazon-btn-hover: #ddb347;
+            --amazon-text: #111111;
+            --text-main: #333333;
+            --text-muted: #666666;
+            --border: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .calculator-box {
+            background-color: #f9fbfc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        button.calc-btn {
+            width: 100%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        button.calc-btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f4fd;
+            border-left: 5px solid #3498db;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .result-box span {
+            display: block;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+        
+        .sub-result {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        .amazon-cta {
+            display: block;
+            width: 100%;
+            max-width: 450px;
+            margin: 20px auto 0;
+            background-color: var(--amazon-btn);
+            color: var(--amazon-text);
+            text-align: center;
+            padding: 15px 20px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s, transform 0.2s;
+            border: 1px solid #a88734;
+        }
+
+        .amazon-cta:hover {
+            background-color: var(--amazon-btn-hover);
+            transform: translateY(-2px);
+        }
+
+        .editorial-content {
+            margin-top: 50px;
+            border-top: 1px solid var(--border);
+            padding-top: 40px;
+        }
+
+        .editorial-content h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .editorial-content p {
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        .faq-section {
+            margin-top: 40px;
+        }
+
+        .faq-section h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .faq-section h3 {
+            color: var(--secondary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px 15px; }
+            h1 { font-size: 1.8rem; }
+            .result-value { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Calcolatore Regolatore di Carica Solare</h1>
+    <p class="subtitle">Dimensiona in modo sicuro il regolatore MPPT o PWM per il tuo camper o baita calcolando la corrente verso le batterie.</p>
+
+    <div class="calculator-box">
+        <div class="form-group">
+            <label for="solarWatts">Potenza totale dei pannelli solari (Watt):</label>
+            <input type="number" id="solarWatts" placeholder="Es. 300" min="10" step="10">
+            <small style="color: #7f8c8d; font-size: 0.85rem;">Inserisci la somma dei Watt di tutti i tuoi pannelli (es. 2 pannelli da 150W = 300W).</small>
+        </div>
+
+        <div class="form-group">
+            <label for="sysVoltage">Tensione nominale del banco batterie:</label>
+            <select id="sysVoltage">
+                <option value="12" selected>12V (Camper, auto, piccole baite)</option>
+                <option value="24">24V (Camper grandi, van, baite medie)</option>
+                <option value="48">48V (Impianti domestici e off-grid grandi)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="margin">Margine di Sicurezza Normativo:</label>
+            <select id="margin" disabled>
+                <option value="1.25" selected>+25% (Protezione Picchi Termici/Cloud Edge)</option>
+            </select>
+            <small style="color: #7f8c8d; font-size: 0.85rem;">Il margine del 25% è applicato di default come standard di sicurezza per le variazioni di irraggiamento.</small>
+        </div>
+
+        <button class="calc-btn" onclick="calculateController()">Calcola Taglia Regolatore</button>
+
+        <div id="resultBox" class="result-box">
+            <span>Taglia MPPT/PWM Consigliata:</span>
+            <div id="controllerResult" class="result-value">-- A</div>
+            <div id="mathResult" class="sub-result">Corrente in uscita stimata: -- A</div>
+            
+            <a href="https://www.amazon.it/s?k=regolatore+di+carica+mppt+victron&tag=offgrid-calc-21" class="amazon-cta" target="_blank" rel="nofollow">Verifica disponibilità e prezzi su Amazon</a>
+        </div>
+    </div>
+
+    <div class="editorial-content">
+        <h2>Come dimensionare il regolatore di carica solare per camper e off-grid</h2>
+        <p>Il regolatore di carica è il vero e proprio cervello del tuo impianto fotovoltaico. Il suo compito è prendere l'energia prodotta dai pannelli solari e adattarla per caricare in sicurezza le batterie a 12V, 24V o 48V, senza sovraccaricarle o danneggiarle. Scegliere la taglia sbagliata (in Ampere) significa rischiare di bruciare il dispositivo o, nel migliore dei casi, di sprecare gran parte dell'energia del sole.</p>
+        
+        <p>Per dimensionare correttamente questo componente fondamentale, non devi guardare la tensione (Volt) dei pannelli solari, ma quella del tuo <strong>pacco batterie</strong>. Il motivo è semplice: l'energia esce dal regolatore ed entra nella batteria alla tensione della batteria stessa. La formula matematica di base è: dividere la potenza totale dei pannelli (in Watt) per la tensione nominale della batteria. Ad esempio, 300W di pannelli solari collegati a un impianto a 12V genereranno un flusso in uscita verso la batteria di circa 25 Ampere (300 / 12 = 25A).</p>
+        
+        <p>A questo valore teorico, le normative elettriche e le best practice del settore impongono di aggiungere un <strong>margine di sicurezza del 25%</strong>. Perché? Perché in alcune condizioni specifiche — come nelle giornate molto fredde (il freddo aumenta il voltaggio dei pannelli) o per il cosiddetto effetto "cloud edge" (quando il sole spunta improvvisamente molto luminoso dai bordi di una nuvola) — i pannelli possono produrre picchi di potenza superiori ai dati nominali di targa.</p>
+        
+        <p>Il nostro calcolatore applica automaticamente questo coefficiente di sicurezza e ti suggerisce la taglia commerciale standard più indicata (ad es. 10A, 20A, 30A, 50A). Ricorda sempre che far lavorare un componente elettronico vicino al 100% della sua capacità ne accorcia la vita a causa del calore generato; per questo arrotondare alla taglia superiore è sempre la scelta più saggia.</p>
+    </div>
+
+    <div class="faq-section">
+        <h2>Domande Frequenti (FAQ)</h2>
+        
+        <h3>Meglio un regolatore MPPT o PWM?</h3>
+        <p>Per quasi tutti gli impianti off-grid moderni, l'MPPT (Maximum Power Point Tracking) è nettamente superiore. Riesce a convertire la tensione in eccesso dei pannelli in Ampere aggiuntivi verso la batteria, garantendo una resa superiore del 20-30% rispetto a un PWM, che invece 'taglia' la tensione sprecando energia preziosa (soprattutto in caso di nuvole parziali).</p>
+
+        <h3>Perché si divide per i Volt della batteria e non per quelli del pannello?</h3>
+        <p>Il lavoro del regolatore di carica è abbassare la tensione alta del pannello solare alla tensione corretta di carica della batteria. Di conseguenza, tutta la potenza in Watt transiterà nei cavi verso la batteria ai Volt della batteria stessa. Un pannello da 300W immetterà circa 25A in una batteria a 12V (300/12), indipendentemente dal fatto che il pannello operi a 20V o 40V nominali.</p>
+
+        <h3>Cosa succede se metto troppi pannelli solari su un regolatore piccolo?</h3>
+        <p>Dipende dalla qualità del dispositivo. Un regolatore MPPT di alta gamma (come un Victron Energy) andrà semplicemente in limitazione (clipping), erogando la sua corrente massima nominale e scartando il resto in sicurezza, senza rompersi. Un regolatore PWM economico o di bassa qualità, invece, tenderà a surriscaldarsi e i fusibili interni potrebbero saltare o il dispositivo potrebbe bruciarsi irrimediabilmente.</p>
+    </div>
+
+    <footer>
+        <p>Strumento di calcolo stimato a scopo indicativo. In qualità di Affiliato Amazon, ricevo un guadagno per ciascun acquisto idoneo.</p>
+    </footer>
+</div>
+
+<script>
+    function calculateController() {
+        const watts = parseFloat(document.getElementById('solarWatts').value);
+        const voltage = parseFloat(document.getElementById('sysVoltage').value);
+        const margin = 1.25; // 25% safety margin
+
+        if (isNaN(watts) || watts <= 0) {
+            alert('Per favore, inserisci un valore in Watt valido e maggiore di zero per i pannelli.');
+            return;
+        }
+
+        // Calcolo Ampere Teorici alla tensione della batteria
+        const amps = watts / voltage;
+
+        // Calcolo con margine del 25%
+        const ampsWithMargin = amps * margin;
+
+        // Taglie commerciali standard MPPT/PWM
+        const standardSizes = [10, 15, 20, 30, 40, 50, 60, 80, 100, 150];
+        
+        let recommendedSize = "Superiore a 150A (Necessita di più regolatori)";
+        
+        for (let i = 0; i < standardSizes.length; i++) {
+            if (standardSizes[i] >= ampsWithMargin) {
+                recommendedSize = standardSizes[i] + " A";
+                break;
+            }
+        }
+
+        document.getElementById('controllerResult').innerText = recommendedSize;
+        document.getElementById('mathResult').innerText = "Corrente massima in uscita (incluso +25% di sicurezza): " + ampsWithMargin.toFixed(1) + " A";
+        
+        document.getElementById('resultBox').style.display = "block";
+    }
+</script>
+
+</body>
+</html>
